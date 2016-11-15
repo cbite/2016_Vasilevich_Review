@@ -217,10 +217,12 @@ ggplot(data=x_df, aes(x=V1, y=V2)) +
     size = 4,
     color="#333333") + 
   geom_point(data = x_new, color = "red", size = 4) +
+  geom_point(data = x_new, color = "gray", alpha = 0.4, size = max_neighbor_dist) +
   coord_equal() + 
   scale_fill_manual(values = c("#FDC086", "#AAAAAA", "#7FC97F")) + 
   xlab("Proliferation") + ylab("Protein level")
 
+p 
 ggsave("knn.png", p, width = 4, height = 4)
 
 
