@@ -1,10 +1,3 @@
----
-title: "How not to drown in data"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(gridExtra)
 library(grid)
@@ -13,11 +6,6 @@ library(lattice)
 library(magrittr)
 library(purrr)
 library(MASS)
-
-```
-
-
-```{r create_data_and_regress}
 set.seed(1)
 
 generate_clusters <- function(ndim, nclusters, cluster_sizes) {
@@ -52,6 +40,8 @@ df$small_sample <- FALSE
 
 df$small_sample[sample(30, 4)] <- TRUE
 
+df<-df[!df$small_sample=="TRUE",]
+
 m <- lm(y ~ x + 1, df)
 
 p <- 
@@ -65,7 +55,7 @@ p <-
   ylab('cell proliferation (a.u.)') + 
   theme_classic() + 
   scale_color_manual(values = c("#000000", "#00FF00")) + 
-    guides(color=FALSE, shape=FALSE)
+  guides(color=FALSE, shape=FALSE)
 
 xs <- 6
 
@@ -75,17 +65,18 @@ ys <- pred$fit
 
 se <- 2 * pred$se.fit
 
-m_small <- lm(y ~ x + 1, df %>% filter(small_sample == TRUE))
-
-y_small <- predict(m_small, data.frame(x = c(min(df$x), max(df$x))))
+# m_small <- lm(y ~ x + 1, df %>% filter(small_sample == TRUE))
+# 
+# y_small <- predict(m_small, data.frame(x = c(min(df$x), max(df$x))))
 
 p <- p + 
   geom_segment(aes(x = xs, y = min(y), xend = xs, yend = ys), linetype = 2, color = "red") + 
   geom_segment(aes(x = min(x),  y = ys, xend = xs, yend = ys), linetype = 2, color = "red") +
   geom_segment(aes(x = min(x),  y = ys+se, xend = xs, yend = ys+se), linetype = 2, color = "darkgray") +
-  geom_segment(aes(x = min(x),  y = ys-se, xend = xs, yend = ys-se), linetype = 2, color = "darkgray") +
-  geom_segment(aes(x = min(x),  y = y_small[[1]], xend = max(x), yend = y_small[[2]]), linetype = 1, color = "purple", size = 1) 
-  
+  geom_segment(aes(x = min(x),  y = ys-se, xend = xs, yend = ys-se), linetype = 2, color = "darkgray")
+#  +
+#  geom_segment(aes(x = min(x),  y = y_small[[1]], xend = max(x), yend = #y_small[[2]]), linetype = 1, color = "purple", size = 1)
+
 
 p
 
@@ -97,11 +88,6 @@ ggsave("grain_size_v_cell_proliferation.png",
 
 
 
-  
-```
-
-
-```{r functions}
 format_matrix <- function(mat) {
   df <- as.data.frame(mat)
   names(df) <- seq(ncol(mat))
@@ -143,15 +129,9 @@ discrete <- function(s, breaks = 8) {
     cut(breaks, 
         labels = seq(breaks), 
         ordered_result = TRUE) %>%
-  matrix(dim(s)[1], 
-         dim(s)[2])
+    matrix(dim(s)[1], 
+           dim(s)[2])
 }
-
-```
-
-
-```{r data_matrices}
-
 p1 <- 
   plot_matrix(format_matrix(discrete(as.matrix(y[,1]))), 
               palette = "BuGn",
@@ -186,12 +166,6 @@ p
 
 ggsave("all_params_v_cell_proliferation_classification.png", p, width = 8, height = 5)
 
-
-```
-
-
-```{r knn}
-
 x_df <- as.data.frame(x)
 x_df$class <- discrete(as.matrix(y[,1]), 3)
 x_df$class <- factor(x_df$class, labels = c("high", "medium", "low"))
@@ -210,7 +184,7 @@ x_df_nn <- x_df[as.vector(indices),]
 max_neighbor_dist <- tail(as.vector(attr(k, "nn.dist")), 1)
 
 p <- 
-ggplot(data=x_df, aes(x=V1, y=V2)) +
+  ggplot(data=x_df, aes(x=V1, y=V2)) +
   geom_point(
     aes(fill=class),
     pch=21,
@@ -224,11 +198,6 @@ ggplot(data=x_df, aes(x=V1, y=V2)) +
 p 
 ggsave("knn.png", p, width = 4, height = 4)
 
-
-```
-
-
-```{r scatter_3d}
 library(plotly)
 library(RColorBrewer)
 
@@ -246,29 +215,19 @@ p <- plot_ly(y_df,
              colors = brewer.pal(3, "Set1")) %>%
   add_markers() %>%
   layout(scene = list(zaxis = list(title = 'ECM'),
-                      yaxis = list(title = 'Protein\nlevel'),
+                      yaxis = list(title = 'Protein\n level'),
                       xaxis = list(title = 'Proliferation')))
 p
-
-```
-
-
-```{r hierarchical}
 library(ggdendro)
 
 model <- cluster::agnes(y, metric = "manhattan", stand = TRUE)
 dg <- as.dendrogram(model)
 p <- 
   ggdendrogram(dg) + 
-  geom_hline(yintercept = 3.5, color = "red", linetype = 2)
+  geom_hline(yintercept = 5, color = "red", linetype = 2)+
+  geom_hline(yintercept = 3.5, color = "blue", linetype = 2)
 p
 ggsave("hier_clustering.png", p, width = 4, height = 4)
-
-```
-
-
-```{r clustering_figure}
-
 p1 <- 
   plot_matrix(format_matrix(discrete(as.matrix(scale(y)))), 
               palette = "BuGn",
@@ -292,4 +251,3 @@ p <- grid.arrange(p1,
 ggsave("clustering.png", p, width = 8, height = 5)
 
 p
-```
