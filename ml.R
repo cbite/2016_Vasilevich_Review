@@ -86,7 +86,9 @@ ggsave("grain_size_v_cell_proliferation.png",
        grid.arrange(p, t, ncol=2), 
        width = 6, height = 4)
 
-
+ggsave("grain_size_v_cell_proliferation.pdf", 
+       grid.arrange(p, t, ncol=2), 
+       width = 6, height = 4)
 
 format_matrix <- function(mat) {
   df <- as.data.frame(mat)
@@ -152,6 +154,8 @@ p
 
 ggsave("all_params_v_cell_proliferation.png", p, width = 8, height = 5)
 
+ggsave("all_params_v_cell_proliferation.pdf", p, width = 8, height = 5)
+
 p1 <- 
   plot_matrix(format_matrix(discrete(as.matrix(y[,1]), 3)), 
               palette =  c("#FDC086", "#AAAAAA", "#7FC97F"),
@@ -165,6 +169,8 @@ p <- grid.arrange(p2, p1, t, nrow=3, heights = c(.01, .01, .01))
 p 
 
 ggsave("all_params_v_cell_proliferation_classification.png", p, width = 8, height = 5)
+
+ggsave("all_params_v_cell_proliferation_classification.pdf", p, width = 8, height = 5)
 
 x_df <- as.data.frame(x)
 x_df$class <- discrete(as.matrix(y[,1]), 3)
@@ -198,6 +204,8 @@ p <-
 p 
 ggsave("knn.png", p, width = 4, height = 4)
 
+ggsave("knn.pdf", p, width = 4, height = 4)
+
 library(plotly)
 library(RColorBrewer)
 
@@ -228,11 +236,16 @@ p <-
   geom_hline(yintercept = 3.5, color = "blue", linetype = 2)
 p
 ggsave("hier_clustering.png", p, width = 4, height = 4)
+ggsave("hier_clustering.pdf", p, width = 4, height = 4)
+
 p1 <- 
   plot_matrix(format_matrix(discrete(as.matrix(scale(y)))), 
               palette = "BuGn",
               ylab = "cell\nproliferation\n(3 features)",
               xlab = "samples (n=30)")
+
+ggsave("all_params_v_cell_proliferation_discrete.pdf", p1, width = 8, height = 5)
+ggsave("all_params_v_cell_proliferation_discrete.png", p1, width = 8, height = 5)
 
 
 p2 <- qplot() + 
