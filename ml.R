@@ -249,7 +249,7 @@ ggsave("all_params_v_cell_proliferation_discrete.png", p1, width = 8, height = 5
 
 
 p2 <- qplot() + 
-  annotation_custom(rasterGrob(png::readPNG("../results/manual/3dcrop.png"))) + theme_void()
+  annotation_custom(rasterGrob(png::readPNG("../results/manual/3dcrop-3.png"))) + theme_void()
 
 p3 <- qplot() + 
   annotation_custom(rasterGrob(png::readPNG("hier_clustering.png"))) + theme_void()
